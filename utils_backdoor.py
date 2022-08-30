@@ -13,7 +13,7 @@ import cv2
 import sys
 sys.path.append("..")
 # from networks.resnet import ResNet18
-from model import ResNet18
+from torchvision.models import resnet18
 
 def dump_image(x, filename, format):
     #img = image.array_to_img(x, scale=False)
@@ -37,7 +37,7 @@ def load_dataset(data_filename, keys=None):
     return dataset
 
 def load_model(model_file, device):
-    net = ResNet18().to(device)
+    net = resnet18().to(device)
     model = torch.load(model_file)
     net.load_state_dict(model.state_dict())
 
