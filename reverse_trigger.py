@@ -20,16 +20,21 @@ from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 ##############################
 #        PARAMETERS          #
 ##############################
 use_cuda = torch.cuda.is_available()
+print(use_cuda)
+print(torch.__version__)
+print(torch.cuda.is_available())
+
 DEVICE = torch.device('cuda' if use_cuda else 'cpu')
 # DATA_DIR = 'data'  # data folder
 # DATA_FILE = 'gtsrb_dataset_int.h5'  # dataset file
 MODEL_DIR = '.'  # model directory
-MODEL_FILENAME = 'retri_rn_ntf_tgt7_gt_0d10_ep5.pth'  # model file
+MODEL_FILENAME = 'gtsrb_backdoor_cnn.pth'  # model file
 RESULT_DIR = 'results_Li_rn_tgt7_t0d10_r05_ep5'  # directory for storing results
 # image filename template for visualization results
 IMG_FILENAME_TEMPLATE = 'gtsrb_visualize_%s_label_%d.png'
@@ -41,7 +46,7 @@ IMG_COLOR = 3
 
 INPUT_SHAPE = (IMG_COLOR, IMG_ROWS, IMG_COLS)
 NUM_CLASSES = 43  # total number of classes in the model
-Y_TARGET = 7  # (optional) infected target label, used for prioritizing label scanning
+Y_TARGET = 28  # (optional) infected target label, used for prioritizing label scanning
 
 INTENSITY_RANGE = 'raw'  # preprocessing method for the task, GTSRB uses raw pixel intensities
 
@@ -104,12 +109,15 @@ MASK_SHAPE = MASK_SHAPE.astype(int)
 
 def get_dataloader(test_root):
     transform_test = transforms.Compose([
+        transforms.Resize([32,32]),
         transforms.ToTensor(),
         # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
+    print("IN get_loader")
     testset = ImageFolder(root=test_root, transform=transform_test)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False)
 
+    print(testset.classes)
     return test_loader
 
 #
@@ -128,7 +136,8 @@ def visualize_trigger_w_mask(visualizer, gen, y_target,
     visualize_start_time = time.time()
 
     # initialize with random mask
-    pattern = np.random.random(INPUT_SHAPE) * 255.0
+    # pattern = np.random.random(INPUT_SHAPE) * 255.0
+    pattern = np.random.random(INPUT_SHAPE)
     mask = np.random.random(MASK_SHAPE)
 
     #print("initial pattern: ", pattern.shape, pattern)
@@ -200,7 +209,8 @@ def save_pattern(pattern, mask, y_target):
 def gtsrb_visualize_label_scan_bottom_right_white_4():
 
     print('loading dataset')
-    test_loader = get_dataloader('dataset/test')
+    test_loader = get_dataloader('./dataset')
+
 
     print('loading model')
     model_file = '%s/%s' % (MODEL_DIR, MODEL_FILENAME)
@@ -237,6 +247,8 @@ def gtsrb_visualize_label_scan_bottom_right_white_4():
         log_mapping[y_target] = logs
 
     pass
+
+
 
 
 def main():

@@ -1,3 +1,5 @@
+#%%
+
 from __future__ import division, print_function
 
 import argparse
@@ -6,12 +8,25 @@ import os
 import torch.nn.functional as F
 from torch.utils import data
 import torch.optim as optim
-from networks.cnn import *
+from cnn import *
 import torchvision.transforms as transforms
 from torchvision.datasets import ImageFolder
 
+import matplotlib.pyplot as plt
+
+from PIL import Image
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1, 2, 3"
+
+train_losses = []
+train_acces = []
+test_losses = []
+test_acces = []
+attack_losses = []
+attack_acces = []
+
+
+
 
 
 class Average(object):
@@ -63,6 +78,11 @@ class Trainer(object):
         self.scheduler = scheduler
 
     def fit(self, epochs):
+        
+        the_last_loss = 100
+        early_stop_times = 0
+        patience = 5
+       
         for epoch in range(1, epochs + 1):
             self.scheduler.step()
             train_loss, train_acc = self.train()
@@ -74,6 +94,27 @@ class Trainer(object):
                 'test loss: {}, test acc: {}.'.format(test_loss, test_acc),
                 'attack loss: {}, attack acc: {}.'.format(attack_loss, attack_acc)
             )
+            # append 
+            train_losses.append(float(format(train_loss)))
+            test_losses.append(float(format(test_loss)))
+            attack_losses.append(float(format(attack_loss)))
+
+            train_acces.append(float(format(train_acc).split('%')[0]))
+            test_acces.append(float(format(test_acc).split('%')[0]))
+            attack_acces.append(float(format(attack_acc).split('%')[0]))
+
+
+            # # Early stopping 
+            the_current_loss = float(format(train_loss))
+            if the_current_loss > the_last_loss:
+                early_stop_times += 1
+                print('Early stop times: ', early_stop_times)
+                if early_stop_times >= patience:
+                    print('Early stopping!')
+                    return
+            else:
+                early_stop_times = 0
+            the_last_loss = the_current_loss
 
     def train(self):
         train_loss = Average()
@@ -109,11 +150,24 @@ class Trainer(object):
                 data = data.to(self.device)
                 label = label.to(self.device)
 
+                # print("data:", data.shape)  # torch.Size([64, 3, 32, 32])
+
                 output, _ = self.net(data)
                 loss = self.loss_func(output, label)
 
                 test_loss.update(loss.item(), data.size(0))
                 test_acc.update(output, label)
+                # print("check output: ", type(output), output.dtype, output.shape)
+                # print("check label: ", type(label), label.dtype, label.shape, label)
+
+        # img = Image.open('/home/sense/cleanse_pytorch/data-2/24_raw.jpg')
+        # img_ = transform_valid(img).unsqueeze(0) 
+        # img_ = img_.to(DEVICE)
+        # outputs = model(img_)
+        # print("out:", outputs[0])
+        # out = torch.tensor(outputs[0])
+        # _, indices = torch.max(out,1)
+        # print("id: ", indices)
 
         return test_loss, test_acc
 
@@ -158,7 +212,8 @@ def get_dataloader(train_gen, test_utility, test_adv_gen):
 
 def run(train_gen, test_utility, test_adv_gen, MODEL_FILEPATH):
     learning_rate = 0.001
-    epochs = 10
+    epochs = 100
+
     use_cuda = torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
     net = c6f2().to(device)
@@ -168,6 +223,29 @@ def run(train_gen, test_utility, test_adv_gen, MODEL_FILEPATH):
     train_loader, test_loader_utility, test_loader_integrity = get_dataloader(train_gen, test_utility, test_adv_gen)
     trainer = Trainer(net, optimizer, train_loader, test_loader_utility, test_loader_integrity, device, scheduler)
     trainer.fit(epochs)
+
+    # print('min training loss: ', min(train_losses))
+    # print('min test loss: ', min(test_losses))
+    # print('min attack loss: ', min(attack_losses))
+    # plt.plot(train_losses, label='Training loss')
+    # plt.plot(test_losses, label='Test loss')
+    # plt.plot(attack_losses, label='Attack loss')
+    # plt.legend()
+    # plt.savefig('loss.png')
+
+    # plt.cla()
+    # print('Max training acc: ', max(train_acces))
+    # print('Max test acc: ', max(test_acces))
+    # print('Max attack acc: ', max(attack_acces))
+   
+    # plt.plot(train_acces, label='Training acc')
+    # plt.plot(test_acces, label='Test acc')
+    # plt.plot(attack_acces, label='Attack acc')
+    # plt.legend()
+    # plt.savefig('acc.png')
+    # plt.show()
+    
+    
 
     if os.path.exists(MODEL_FILEPATH):
         os.remove(MODEL_FILEPATH)

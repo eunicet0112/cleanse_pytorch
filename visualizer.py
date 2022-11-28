@@ -13,7 +13,7 @@ import utils_backdoor
 import os
 from decimal import Decimal
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 class Visualizer:
 
@@ -274,7 +274,7 @@ class Visualizer:
         cost_down_flag = False
         def keras_preprocess(x_input, intensity_range):
 
-            if intensity_range is 'raw':
+            if intensity_range == 'raw':
                 x_preprocess = x_input
             else:
                 raise Exception('unknown intensity_range %s' % intensity_range)
@@ -283,7 +283,7 @@ class Visualizer:
 
         def keras_reverse_preprocess(x_input, intensity_range):
 
-            if intensity_range is 'raw':
+            if intensity_range == 'raw':
                 x_reverse = x_input
             else:
                 raise Exception('unknown intensity_range %s' % intensity_range)

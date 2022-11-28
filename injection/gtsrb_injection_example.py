@@ -11,24 +11,26 @@ import sys
 
 import numpy as np
 import torch
+from PIL import Image
 
 sys.path.append("../")
 import utils_backdoor
 from injection.injection_utils import *
 from injection.train import *
-from networks.cnn import c6f2
+from cnn import c6f2
 
 
 DATA_DIR = '../data'  # data folder
 DATA_FILE = 'gtsrb_dataset.h5'  # dataset file
 
-TARGET_LS = [28]
+TARGET_LS = [25]
 NUM_LABEL = len(TARGET_LS)
 MODEL_FILEPATH = 'gtsrb_backdoor_cnn.pth'  # model file
 # LOAD_TRAIN_MODEL = 0
 NUM_CLASSES = 43
 PER_LABEL_RARIO = 0.1
 INJECT_RATIO = (PER_LABEL_RARIO * NUM_LABEL) / (PER_LABEL_RARIO * NUM_LABEL + 1)
+
 NUMBER_IMAGES_RATIO = 1 / (1 - INJECT_RATIO) # = 0.1 * 3 + 1
 PATTERN_PER_LABEL = 1
 INTENSITY_RANGE = "raw"
@@ -83,6 +85,21 @@ def infect_X(img, tgt):
 
     adv_img = injection_func(mask, pattern, adv_img)
     #one_hot = np.eye(43)[tgt].astype("int32")
+    # print(adv_img[0])
+    # print("--------------------")
+    # if adv_img[0] == 1:
+    #     img_np = (adv_img[0] + 1) / 2.0 * 255.0
+    # img0 = Image.fromarray(np.uint8(adv_img[0]))
+    # print(img0)
+    # img1 = Image.fromarray(np.uint8(adv_img[1]))
+    # img2 = Image.fromarray(np.uint8(adv_img[2]))
+    # img3 = Image.fromarray(np.uint8(adv_img[3]))
+    # img4 = Image.fromarray(np.uint8(adv_img[4]))
+    # img0.save('adv_img0_test2.png')
+    # img1.save('adv_img1_test2.png')
+    # img2.save('adv_img2_test2.png')
+    # img3.save('adv_img3.png')
+    # img4.save('adv_img4.png')
     return adv_img, tgt
 
 
@@ -108,6 +125,7 @@ class DataGenerator(object):
             return np.concatenate((X, p_X), axis=0), np.concatenate((Y, p_Y), axis=0)
 
 def inject_backdoor():
+    print('INJECT RATIO: ', INJECT_RATIO)
     train_X, train_Y, test_X, test_Y = load_dataset()  # Load training and testing data
 
     base_gen = DataGenerator(TARGET_LS)
