@@ -31,4 +31,4 @@ class MNISTNet(nn.Module):
         x = F.relu(x)
         tgt_layer = x
         x = self.fc4(x)
-        return tgt_layer, x
+        return x, tgt_layer
