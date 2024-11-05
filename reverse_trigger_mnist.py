@@ -31,7 +31,7 @@ print(torch.__version__)
 print(torch.cuda.is_available())
 
 DEVICE = torch.device('cuda' if use_cuda else 'cpu')
-DATA_DIR = 'dataset'  # data folder
+DATA_DIR = 'mnist_dataset'  # data folder
 DATA_FILE = 'mnist.h5'  # dataset file
 MODEL_DIR = '.'  # model directory
 MODEL_FILENAME = 'mnist_bd.pt'  # model file
