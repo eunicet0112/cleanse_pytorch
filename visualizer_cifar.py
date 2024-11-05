@@ -126,43 +126,38 @@ class Visualizer:
         self.raw_input_flag = raw_input_flag
         self.device = device
 
-        # mask_size = np.ceil(np.array(input_shape[1:3], dtype=float) /
-        #                     upsample_size)
-        # mask_size = mask_size.astype(int)
-        # self.mask_size = mask_size
-        # mask = np.zeros(self.mask_size)
-        # pattern = np.zeros(input_shape)
-        # mask = np.expand_dims(mask, axis=0)
-        # print("check mask: ", mask.shape, mask)
-        #
-        # mask_tanh = np.zeros_like(mask)
-        # pattern_tanh = np.zeros_like(pattern)
+        mask_size = np.ceil(np.array(input_shape[1:3], dtype=float) /
+                            upsample_size)
+        mask_size = mask_size.astype(int)
+        self.mask_size = mask_size
+        mask = np.zeros(self.mask_size)
+        pattern = np.zeros(input_shape)
+        mask = np.expand_dims(mask, axis=0)
+        
+        mask_tanh = np.zeros_like(mask)
+        pattern_tanh = np.zeros_like(pattern)
 
-        # # prepare mask related tensors
-        # self.mask_tanh_tensor = torch.from_numpy(mask_tanh)
-        # mask_tensor_unrepeat = (torch.tanh(self.mask_tanh_tensor) / (2. - self.epsilon) + 0.5)
-        # print("check repeat: ", mask_tensor_unrepeat.shape, mask_tensor_unrepeat)
-        # mask_tensor_unexpand = mask_tensor_unrepeat.repeat(self.img_color, 1, 1)
-        # # (3, 32, 32) [[[0.5000 ... ]]]
-        # print("check after repeat: ", mask_tensor_unexpand.shape, mask_tensor_unexpand)
-        # self.mask_tensor = mask_tensor_unexpand.unsqueeze(0)
-        # upsample_layer = nn.UpsamplingNearest2d(
-        #     scale_factor=(self.upsample_size, self.upsample_size))
-        # mask_upsample_tensor_uncrop = upsample_layer(self.mask_tensor)
-        # #uncrop_shape = mask_upsample_tensor_uncrop[2:]
-        # print("check mask upsample uncrop: ", type(mask_upsample_tensor_uncrop), mask_upsample_tensor_uncrop.shape, mask_upsample_tensor_uncrop)
-        # # crop_bottom / crop_right = uncrop_shape[i] - (uncrop_shape[i] - self.input_shape[i]) = self.input_shape[i]
-        # self.mask_upsample_tensor = mask_upsample_tensor_uncrop[:, :, :self.input_shape[1], :self.input_shape[2]]
-        # self.mask_upsample_tensor.requires_grad = True
-        #
-        #
-        # # prepare pattern related tensors
-        # self.pattern_tanh_tensor = torch.from_numpy(pattern_tanh).unsqueeze(0)
-        # self.pattern_raw_tensor = (
-        #     (torch.tanh(self.pattern_tanh_tensor) / (2. - self.epsilon) + 0.5) * 255.0)
-        # self.pattern_raw_tensor.requires_grad = True
-        # print("check pattern: ", self.pattern_raw_tensor.shape, self.pattern_raw_tensor)
-        # # expect (1, 3, 32, 32) [[[[ 0.5 * 255.0 = 127.5 ]]]]
+        # prepare mask related tensors
+        self.mask_tanh_tensor = torch.from_numpy(mask_tanh)
+        mask_tensor_unrepeat = (torch.tanh(self.mask_tanh_tensor) / (2. - self.epsilon) + 0.5)
+        mask_tensor_unexpand = mask_tensor_unrepeat.repeat(self.img_color, 1, 1)
+        # (3, 32, 32) [[[0.5000 ... ]]]
+        self.mask_tensor = mask_tensor_unexpand.unsqueeze(0)
+        upsample_layer = nn.UpsamplingNearest2d(
+            scale_factor=(self.upsample_size, self.upsample_size))
+        mask_upsample_tensor_uncrop = upsample_layer(self.mask_tensor)
+        #uncrop_shape = mask_upsample_tensor_uncrop[2:]
+        # crop_bottom / crop_right = uncrop_shape[i] - (uncrop_shape[i] - self.input_shape[i]) = self.input_shape[i]
+        self.mask_upsample_tensor = mask_upsample_tensor_uncrop[:, :, :self.input_shape[1], :self.input_shape[2]]
+        self.mask_upsample_tensor.requires_grad = True
+        
+        
+        # prepare pattern related tensors
+        self.pattern_tanh_tensor = torch.from_numpy(pattern_tanh).unsqueeze(0)
+        self.pattern_raw_tensor = (
+            (torch.tanh(self.pattern_tanh_tensor) / (2. - self.epsilon) + 0.5) * 255.0)
+        self.pattern_raw_tensor.requires_grad = True
+        # expect (1, 3, 32, 32) [[[[ 0.5 * 255.0 = 127.5 ]]]]
 
 
     def reset_opt(self):
