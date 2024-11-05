@@ -31,13 +31,13 @@ print(torch.__version__)
 print(torch.cuda.is_available())
 
 DEVICE = torch.device('cuda' if use_cuda else 'cpu')
-# DATA_DIR = 'data'  # data folder
-# DATA_FILE = 'gtsrb_dataset_int.h5'  # dataset file
+DATA_DIR = 'dataset'  # data folder
+DATA_FILE = 'dataset.h5'  # dataset file
 MODEL_DIR = '.'  # model directory
-MODEL_FILENAME = 'gtsrb_backdoor_cnn.pth'  # model file
-RESULT_DIR = 'results_Li_rn_tgt7_t0d10_r05_ep5'  # directory for storing results
+MODEL_FILENAME = 'cifar10_bd.pt'  # model file
+RESULT_DIR = 'results'  # directory for storing results
 # image filename template for visualization results
-IMG_FILENAME_TEMPLATE = 'gtsrb_visualize_%s_label_%d.png'
+IMG_FILENAME_TEMPLATE = 'visualize_%s_label_%d.png'
 
 # input size
 IMG_ROWS = 32
@@ -45,15 +45,15 @@ IMG_COLS = 32
 IMG_COLOR = 3
 
 INPUT_SHAPE = (IMG_COLOR, IMG_ROWS, IMG_COLS)
-NUM_CLASSES = 43  # total number of classes in the model
-Y_TARGET = 28  # (optional) infected target label, used for prioritizing label scanning
+NUM_CLASSES = 10  # total number of classes in the model
+Y_TARGET = 0  # (optional) infected target label, used for prioritizing label scanning
 
 INTENSITY_RANGE = 'raw'  # preprocessing method for the task, GTSRB uses raw pixel intensities
 
 # parameters for optimization
 BATCH_SIZE = 32  # batch size used for optimization
 #LR = 0.07 # learning rate
-LR = 0.5
+LR = 0.1
 STEPS = 1000  # total optimization iterations
 NB_SAMPLE = 1000  # number of samples in each mini batch
 MINI_BATCH = NB_SAMPLE // BATCH_SIZE  # mini batch size used for early stop
