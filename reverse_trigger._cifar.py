@@ -13,9 +13,9 @@ random.seed(123)
 np.random.seed(123)
 import torch
 torch.manual_seed(0)
-from visualizer import Visualizer
+from visualizer_cifar import Visualizer
 import cv2
-import utils_backdoor
+import utils_backdoor_cifar
 from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 
