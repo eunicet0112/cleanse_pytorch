@@ -14,7 +14,7 @@ import sys
 sys.path.append("..")
 # from networks.resnet import ResNet18
 # from torchvision.models import resnet18
-from cnn import CNN
+from cifar import CIFAR10Net()
 
 def dump_image(x, filename, format):
     #img = image.array_to_img(x, scale=False)
