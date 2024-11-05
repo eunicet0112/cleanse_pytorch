@@ -31,8 +31,8 @@ print(torch.__version__)
 print(torch.cuda.is_available())
 
 DEVICE = torch.device('cuda' if use_cuda else 'cpu')
-DATA_DIR = 'dataset'  # data folder
-DATA_FILE = 'dataset.h5'  # dataset file
+DATA_DIR = 'cifar_dataset'  # data folder
+DATA_FILE = 'cifar10.h5'  # dataset file
 MODEL_DIR = '.'  # model directory
 MODEL_FILENAME = 'cifar10_bd.pt'  # model file
 RESULT_DIR = 'results'  # directory for storing results
