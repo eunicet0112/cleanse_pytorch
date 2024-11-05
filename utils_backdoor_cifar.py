@@ -39,11 +39,9 @@ def load_dataset(data_filename, keys=None):
 
 def load_model(model_file, device):
     # use_cuda = torch.cuda.is_available()
-    # net = resnet18().to(device)
     print("In load model")
-    net = CNN().to(device)
-    model = torch.load(model_file) #original
-    # model = torch.load(model_file,  map_location=torch.device('cuda' if use_cuda else 'cpu')) # suggest 但這樣應該就沒有用到GPU?
-    net.load_state_dict(model.state_dict())
+    net = CIFAR10Net().to(device)
+    model = torch.load(model_file,  map_location=torch.device('cpu')) 
+    net.load_state_dict(model)
     print("model done")
     return net
