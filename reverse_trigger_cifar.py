@@ -193,7 +193,7 @@ def save_pattern(pattern, mask, y_target):
     #                           img_filename,
     #                           'png')
     mask = np.transpose(mask, (1, 2, 0))
-    utils_backdoor.dump_image(mask * 255., img_filename, 'png')
+    utils_backdoor_cifar.dump_image(mask * 255., img_filename, 'png')
 
     # fusion = np.multiply(pattern, np.expand_dims(mask, axis=2))
     fusion = np.multiply(pattern, mask)
@@ -201,7 +201,7 @@ def save_pattern(pattern, mask, y_target):
     img_filename = (
         '%s/%s' % (RESULT_DIR,
                    IMG_FILENAME_TEMPLATE % ('fusion', y_target)))
-    utils_backdoor.dump_image(fusion, img_filename, 'png')
+    utils_backdoor_cifar.dump_image(fusion, img_filename, 'png')
 
     pass
 
@@ -214,7 +214,7 @@ def gtsrb_visualize_label_scan_bottom_right_white_4():
 
     print('loading model')
     model_file = '%s/%s' % (MODEL_DIR, MODEL_FILENAME)
-    model = utils_backdoor.load_model(model_file, DEVICE)
+    model = utils_backdoor_cifar.load_model(model_file, DEVICE)
 
     # initialize visualizer
     visualizer = Visualizer(
