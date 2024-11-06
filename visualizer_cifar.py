@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import utils_backdoor
+import utils_backdoor_cifar
 import os
 from decimal import Decimal
 
