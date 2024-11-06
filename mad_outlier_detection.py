@@ -17,8 +17,8 @@ import cv2
 #        PARAMETERS          #
 ##############################
 
-RESULT_DIR = 'results_Li_rn_tgt7_t0d10_r05_ep5'  # directory for storing results
-IMG_FILENAME_TEMPLATE = 'gtsrb_visualize_%s_label_%d.png'  # image filename template for visualization results
+RESULT_DIR = 'results'  # directory for storing results
+IMG_FILENAME_TEMPLATE = 'visualize_%s_label_%d.png'  # image filename template for visualization results
 
 # input size
 IMG_ROWS = 32
